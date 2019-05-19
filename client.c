@@ -2,6 +2,7 @@
 #include<malloc.h>
 #include<stdlib.h>
 #include "header.h"
+#include "header_k.h"
 
 int main()
 {
@@ -11,27 +12,39 @@ int main()
      root = NULL;
      int choice = 0;
      int ele;
+
+     RecentNodes List;
+
+     int k;
+     printf("Enter the number of recent nodes: ");
+     scanf("%d",&k);
+     initialize(&List, k);
+
      while(1)
      {
          printf("\n\n 1.Insert");
          printf("\n\n 2.Delete");
          printf("\n\n 3.Search");
          printf("\n\n 4.Display\n");
+         printf("\n\n 5.Print %d recent nodes\n", k);
          printf("\n\n Enter your choice:");
          scanf("%d",&choice);
-         if(choice==5)
-            exit(0);
+
          switch(choice)
          {
              case 1:
                 printf("\n\n Enter the element to be inserted:");
-                scanf("%d",&ele);
+                scanf("%d", &ele);
+                //printf("%d\n", ele);
                 x = insert(root,ele);
                 if(root != NULL)
                 {
                     splay(x,root);
                 }
                 root = x;
+                //printf("%d\n", ele);
+                printf("%d\n", root->data);
+                isKeyRecent(&List, root->data);
              break;
 
              case 2:
@@ -42,7 +55,9 @@ int main()
                  }
                  printf("\n\n Enter the element to be delete:");
                  scanf("%d",&ele);
+                 delete_ll(&List, ele);
                  root = delete(root, ele);
+                 isKeyRecent(&List, root->data);
              break;
 
              case 3:
@@ -55,6 +70,7 @@ int main()
                      printf("Element not found\n");
                  }
                  root = x;
+                 isKeyRecent(&List, root->data);
              break;
 
              case 4:
@@ -62,10 +78,17 @@ int main()
                  print_ascii_tree(root);
              break;
 
+             case 5:
+                printRecent(List);
+             break;
+
+             case 6:
+                exit(0);
+             break;
+
              default:
              printf("Wrong choice\n");
              break;
-
          }
      }
 }
