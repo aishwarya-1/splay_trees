@@ -2,29 +2,6 @@
 #include<stdlib.h>
 #include "header_k.h"
 
-/*void main()
-{
-    RecentNodes List;
-
-    int k,choice=1;
-    printf("Enter the number of recent nodes: ");
-    scanf("%d",&k);
-
-    initialize(&List,k);
-
-    while(choice){
-        scanf("%d",&choice);
-        if(choice == -1)
-            printRecent(List);
-        else if(choice > 1000)
-            break;
-        else
-            checkList(&List,choice);
-    }
-    printRecent(List);
-}*/
-
-
 //Initializes the RecentNodes List at the beginning of the program
 void initialize(RecentNodes *List, int k)
 {
@@ -34,18 +11,6 @@ void initialize(RecentNodes *List, int k)
     List->maxNodes = k;
 }
 
-/*
-//Checks if the given key is in the k recent nodes list or not and processes as required
-int checkList(RecentNodes *List, int key)
-{
-    int recent = isKeyRecent(List,key);
-    if(recent)
-        printf("%d HIT\n",key);
-    else
-        printf("%d MISS\n",key);
-
-}*/
-
 //Creates and Returns a New Node with key as its value and count of 1
 Node *createNode(int key)
 {
@@ -54,7 +19,6 @@ Node *createNode(int key)
     temp->value = key;
     temp->count = 1;
     temp->next = NULL;
-
     return temp;
 }
 
@@ -76,7 +40,7 @@ void isKeyRecent(RecentNodes *List, int key)
 {
     if(List->head == NULL){
         insertNode(List,key);
-        //return 0;
+        return;
     }
 
     Node *temp = List->head;
@@ -86,16 +50,18 @@ void isKeyRecent(RecentNodes *List, int key)
         temp = temp->next;
     }
 
-    if(temp->next == NULL && temp->value!=key){
-        if(List->nodes == List->maxNodes){
+    if(temp->next == NULL && temp->value!=key)
+    {
+        if(List->nodes == List->maxNodes)
+        {
             Node *deleted = List->tail;
-            free(deleted);
             ptr->next = NULL;
+            free(deleted);
             List->tail = ptr;
             List->nodes--;
         }
         insertNode(List,key);
-        //return 0;
+        return;
     }
     //returns 0 to indicate key not found in the list but has been inserted now
 
@@ -106,7 +72,8 @@ void isKeyRecent(RecentNodes *List, int key)
         temp->next = List->head;
     List->head = temp;
     temp->count++;
-    //return 1;
+    
+    return;
     //returns 1 to indicate key found in the list and has been moved to the front
 }
 
