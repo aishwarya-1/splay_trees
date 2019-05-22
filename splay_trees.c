@@ -60,12 +60,14 @@ tree *rightrotation(tree *p,tree *root)
      tree *x;
      x = p->left;
      p->left = x->right;
-     if (x->right!=NULL) x->right->parent = p;
+     if (x->right!=NULL)
+        x->right->parent = p;
      x->right = p;
      if (p->parent!=NULL)
-        if(p==p->parent->right) p->parent->right=x;
+        if(p==p->parent->right)
+            p->parent->right=x;
         else
-        p->parent->left=x;
+            p->parent->left=x;
      x->parent = p->parent;
      p->parent = x;
      if (p==root)
@@ -78,18 +80,20 @@ tree *leftrotation(tree *p,tree *root)
     tree *x;
     x = p->right;
     p->right = x->left;
-    if (x->left!=NULL) x->left->parent = p;
+    if (x->left!=NULL)
+        x->left->parent = p;
     x->left = p;
     if (p->parent!=NULL)
-    if (p==p->parent->left) p->parent->left=x;
+        if (p==p->parent->left)
+            p->parent->left=x;
     else
-    p->parent->right=x;
+        p->parent->right=x;
     x->parent = p->parent;
     p->parent = x;
     if(p==root)
-    return x;
+        return x;
     else
-    return root;
+        return root;
 }
 
 tree *create_node(int value)
@@ -126,169 +130,100 @@ tree *insert(tree *p, int value)
         }
         if(temp1->data > value)
         {
-            par = temp1;//temp1 having the parent address,so that's it
             temp1->left = newNode;
-            newNode->parent = temp1;//store the parent address.
         }
         else
         {
-            par = temp1;//temp1 having the parent tree address.
             temp1->right = newNode;
-            newNode->parent = par;//store the parent address
         }
+        newNode->parent = temp1;//store the parent address
     }
     return (newNode);
 }
 
-/*tree *inorder(tree *p)
+// The delete function for Splay tree. Note that this function
+// returns the new root of Splay Tree after removing the key
+tree* delete(tree *root, int key)
 {
-     if(p != NULL)
-     {
-     inorder(p->left);
-     printf("CURRENT %d\t",p->data);
-     printf("LEFT %d\t",data_print(p->left));
-     printf("PARENT %d\t",data_print(p->parent));
-     printf("RIGHT %d\t\n",data_print(p->right));
-     inorder(p->right);
-     }
-}*/
+    tree *temp;
+    if (!root)
+        return NULL;
 
-
-tree *delete(tree *p,int value)
-{
-     tree *x,*y,*p1;
-     tree *root;
-     tree *s;
-     root = p;
-     x = lookup(p,value);
-     if(x->data == value)
-     { //if the deleted element is leaf
-         if((x->left == NULL) && (x->right == NULL))
-         {
-             y = x->parent;
-             if(x ==(x->parent->right))
-                y->right = NULL;
-             else
-                y->left = NULL;
-             free(x);
-         }
-         //if deleted element having left child only
-         else if((x->left != NULL) &&(x->right == NULL))
-         {
-             if(x == (x->parent->left))
-             {
-                 y = x->parent;
-                 x->left->parent = y;
-                 y->left = x->left;
-                 free(x);
-             }
-             else
-             {
-                 y = x->parent;
-                 x->left->parent = y;
-                 y->right = x->left;
-                 free(x);
-             }
-         }
-        //if deleted element having right child only
-        else if((x->left == NULL) && (x->right != NULL))
-        {
-            if(x == (x->parent->left))
-            {
-                y = x->parent;
-                x->right->parent = y;
-                y->left = x->right;
-                free(x);
-            }
-            else
-            {
-                y = x->parent;
-                x->right->parent = y;
-                y->right = x->right;
-                free(x);
-            }
-        }
-    //if the deleted element having two child
-    else if((x->left != NULL) && (x->right != NULL))
+    temp = root;
+    tree *x = lookup(root, key);
+    // Splay the given key
+    splay(x, root);
+    root = x;
+    if(root->data!=key)
     {
-        if(x == (x->parent->left))
-        {
-            s = sucessor(x);
-            if(s != x->right)
-            {
-                y = s->parent;
-                if(s->right != NULL)
-                {
-                    s->right->parent = y;
-                    y->left = s->right;
-                }
-                else y->left = NULL;
-                s->parent = x->parent;
-                x->right->parent = s;
-                x->left->parent = s;
-                s->right = x->right;
-                s->left = x->left;
-                x->parent->left = s;
-            }
-            else
-            {
-                y = s;
-                s->parent = x->parent;
-                x->left->parent = s;
-                s->left = x->left;
-                x->parent->left = s;
-             }
-             free(x);
-        }
-             else if(x == (x->parent->right))
-             {
-             s = sucessor(x);
-             if(s != x->right)
-             {
-             y = s->parent;
-             if(s->right != NULL)
-             {
-             s->right->parent = y;
-             y->left = s->right;
-             }
-             else y->left = NULL;
-             s->parent = x->parent;
-             x->right->parent = s;
-             x->left->parent = s;
-             s->right = x->right;
-             s->left = x->left;
-             x->parent->right = s;
-             }
-             else
-             {
-             y = s;
-             s->parent = x->parent;
-             x->left->parent = s;
-             s->left = x->left;
-             x->parent->right = s;
-             }
-             free(x);
-         }
-     }
-     splay(y,root);
-     }
-     else
-     {
-     splay(x,root);
-     }
-}
-
-tree *sucessor(tree *x)
-{
-    tree *temp,*temp2;
-    temp=temp2=x->right;
-    while(temp != NULL)
-    {
-        temp2 = temp;
-        temp = temp->left;
+        root = x;
+        return root;
     }
-    return temp2;
+    //print_ascii_tree(root);
+
+    // If key is present
+    // If left child of root does not exist
+    // make root->right as root
+
+    if (!root->left)
+    {
+        if(root->right!=NULL)
+        {
+            temp = root;
+            //printf("%d\n", root->data);
+            root = root->right;
+            root->parent = NULL;
+        }
+        else
+        {
+            root = NULL;
+            return root;
+        }
+    }
+
+    // Else if left child exists
+    else
+    {
+        //printf("%d\n", root->data);
+        //print_ascii_tree(root);
+        temp = root;
+        tree *q = root->left;
+        tree *q1;
+        while(q!=NULL)
+        {
+            q1 = q;
+            q = q->right;
+        }
+        //printf("%d\n", q1->data);
+        splay(q1, root->left);
+        //print_ascii_tree(root);
+        root = q1;
+
+
+        // Make right child of previous root  as
+        // new root's right child
+        if(temp->right!=NULL)
+        {
+            root->right = temp->right;
+            temp->right->parent = root;
+        }
+        else
+        {
+            root->right = NULL;
+        }
+
+    }
+
+    // free the previous root node, that is,
+    // the node containing the key
+    free(temp);
+
+    // return root of the new Splay Tree
+    return root;
+
 }
+
+//p is a root element of the tree
 //p is a root element of the tree
 tree *lookup(tree *p, int value)
 {
@@ -312,21 +247,5 @@ tree *lookup(tree *p, int value)
     {
         printf("NO element in the tree\n");
         exit(0);
-    }
-}
-tree *search(tree *p,int value)
-{
-    tree *x,*root;
-    root = p;
-    x = lookup(p,value);
-    if(x->data == value)
-    {
-        printf("Inside search if\n");
-        splay(x,root);
-    }
-    else
-    {
-        printf("Inside search else\n");
-        splay(x,root);
     }
 }
