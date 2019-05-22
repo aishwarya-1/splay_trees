@@ -35,16 +35,13 @@ int main()
              case 1:
                 printf("\n\n Enter the element to be inserted:");
                 scanf("%d", &ele);
-                //printf("%d\n", ele);
+                isKeyRecent(&List, ele);
                 x = insert(root,ele);
                 if(root != NULL)
                 {
                     splay(x,root);
                 }
                 root = x;
-                //printf("%d\n", ele);
-                printf("%d\n", root->data);
-                isKeyRecent(&List, root->data);
              break;
 
              case 2:
@@ -53,15 +50,24 @@ int main()
                      printf("\n Empty tree...");
                      continue;
                  }
-                 printf("\n\n Enter the element to be delete:");
+                 printf("\n\n Enter the element to be deleted:");
                  scanf("%d",&ele);
+                 x = lookup(root,ele);
+                 if(x->data!=ele)
+                 {
+                     isKeyRecent(&List, root->data);
+                     continue;
+                 }
                  delete_ll(&List, ele);
                  root = delete(root, ele);
-                 isKeyRecent(&List, root->data);
+                 if(root->data!=NULL)
+                 {
+                     isKeyRecent(&List, root->data);
+                 }
              break;
 
              case 3:
-                 printf("Enter the element to be search\n");
+                 printf("Enter the element to be searched\n");
                  scanf("%d",&ele);
                  x = lookup(root,ele);
                  splay(x,root);
