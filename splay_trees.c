@@ -3,6 +3,47 @@
 #include<stdlib.h>
 #include "header.h"
 
+tree *rightrotation(tree *p,tree *root)
+{
+     tree *x;
+     x = p->left;
+     p->left = x->right;
+     if (x->right!=NULL)
+        x->right->parent = p;
+     x->right = p;
+     if (p->parent!=NULL)
+        if(p==p->parent->right)
+            p->parent->right=x;
+        else
+            p->parent->left=x;
+     x->parent = p->parent;
+     p->parent = x;
+     if (p==root)
+        return x;
+     else
+        return root;
+}
+tree *leftrotation(tree *p,tree *root)
+{
+    tree *x;
+    x = p->right;
+    p->right = x->left;
+    if (x->left!=NULL)
+        x->left->parent = p;
+    x->left = p;
+    if (p->parent!=NULL)
+        if (p==p->parent->left)
+            p->parent->left=x;
+    else
+        p->parent->right=x;
+    x->parent = p->parent;
+    p->parent = x;
+    if(p==root)
+        return x;
+    else
+        return root;
+}
+
 void splay (tree *x, tree *root)
 {
     tree *p,*g;
@@ -55,47 +96,6 @@ void splay (tree *x, tree *root)
      }
 }
 
-tree *rightrotation(tree *p,tree *root)
-{
-     tree *x;
-     x = p->left;
-     p->left = x->right;
-     if (x->right!=NULL)
-        x->right->parent = p;
-     x->right = p;
-     if (p->parent!=NULL)
-        if(p==p->parent->right)
-            p->parent->right=x;
-        else
-            p->parent->left=x;
-     x->parent = p->parent;
-     p->parent = x;
-     if (p==root)
-        return x;
-     else
-        return root;
-}
-tree *leftrotation(tree *p,tree *root)
-{
-    tree *x;
-    x = p->right;
-    p->right = x->left;
-    if (x->left!=NULL)
-        x->left->parent = p;
-    x->left = p;
-    if (p->parent!=NULL)
-        if (p==p->parent->left)
-            p->parent->left=x;
-    else
-        p->parent->right=x;
-    x->parent = p->parent;
-    p->parent = x;
-    if(p==root)
-        return x;
-    else
-        return root;
-}
-
 tree *create_node(int value)
 {
     tree *n = (tree *)malloc(sizeof(tree));
@@ -109,7 +109,7 @@ tree *create_node(int value)
 tree *insert(tree *p, int value)
 {
     tree *newNode = create_node(value);
-    tree *temp1,*temp2,*par;
+    tree *temp1,*temp2;
     if(p == NULL)
     {
         p =  newNode;
@@ -153,13 +153,16 @@ tree* delete(tree *root, int key)
     tree *x = lookup(root, key);
     // Splay the given key
     splay(x, root);
+    // if(x->data!=key)
+    // {
+    //     return root;
+    // }
     root = x;
     if(root->data!=key)
     {
         root = x;
         return root;
     }
-    //print_ascii_tree(root);
 
     // If key is present
     // If left child of root does not exist
@@ -184,8 +187,6 @@ tree* delete(tree *root, int key)
     // Else if left child exists
     else
     {
-        //printf("%d\n", root->data);
-        //print_ascii_tree(root);
         temp = root;
         tree *q = root->left;
         tree *q1;
@@ -194,11 +195,8 @@ tree* delete(tree *root, int key)
             q1 = q;
             q = q->right;
         }
-        //printf("%d\n", q1->data);
         splay(q1, root->left);
-        //print_ascii_tree(root);
         root = q1;
-
 
         // Make right child of previous root  as
         // new root's right child
